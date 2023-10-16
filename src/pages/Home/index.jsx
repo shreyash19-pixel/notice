@@ -1,20 +1,11 @@
 import React from 'react'
-import styled from 'styled-components'
-import Test from '../../components/Test'
-
+import ToDo from '../../views/ToDo'
 
 const Home = () => {
-    const Container = styled.div`
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 32px;
-    `
   return (
-   <Container>
-      <Test />
-   </Container>
+    <div>
+        <ToDo />
+    </div>
   )
 }
 
