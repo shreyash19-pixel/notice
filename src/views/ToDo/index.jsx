@@ -1,52 +1,51 @@
-import React,{useState,useRef,useEffect} from 'react'
+import React,{useState,useRef, useEffect} from 'react'
 import { AddButton, AddToList, DeleteIcon, EmptyMessage, EmptyMessageWrapper, InputBar, SadIcon, TaskContainer, TaskName, TaskWrap, Tasks, ToDoContainer, ToDoWrap, TodoList } from '../../styles/ToDo'
 import {AiFillDelete,AiOutlinePlus} from 'react-icons/ai'
 import {BiSad} from 'react-icons/bi'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToList, delFromList } from '../../actions/actions'
+
 
 const ToDo = () => {
 
-   const newTask = JSON.parse(localStorage.getItem('tasks')) || []
-   const [taskArray, setTaskArray] = useState(newTask)
-   const [tasks, setTasks] = useState('')
-   const taskRef = useRef(null)
+  const [tasks, setTasks] = useState('')
+  const taskRef = useRef()
+  
+  const todos = useSelector(state => state.todos)
+  const dispatch = useDispatch()
 
+  useEffect(() => {
+    localStorage.setItem('taskList', JSON.stringify(todos))
+  },[todos])
 
-   useEffect(() => {
-    localStorage.setItem('tasks',JSON.stringify(taskArray))
-   },[taskArray])
-
-   const handleTasks = (e) => {
-    setTasks(e.target.value)
-   }
-
-   const handleOutput = () => {
-        setTaskArray([...taskArray,tasks]) 
+  const handleAddTodo = () => {
+    if(tasks)
+    {
+        dispatch(addToList(tasks))
         taskRef.current.value = ''
+        setTasks('')
     }
+  }
 
-    const handleDelete = (index) => {
-        const updatedArray = [...taskArray]
-        updatedArray.splice(index,1)
-        setTaskArray(updatedArray)
-    }
+  const handleDeleteTodo = (todo) => {
+    dispatch(delFromList(todo))
+  }
 
-
-   
   return (
     <ToDoContainer>
         <ToDoWrap>
             <TodoList>
                 <AddToList>
-                    <InputBar ref = {taskRef} type = "text" placeholder = "Add tasks from here..." onChange = {handleTasks}/>
-                    <AddButton onClick = {handleOutput}><AiOutlinePlus/></AddButton>
+                    <InputBar ref = {taskRef} type = "text" placeholder = "Add tasks from here..." onChange = {(e) => setTasks(e.target.value)} />
+                    <AddButton onClick = {handleAddTodo}><AiOutlinePlus/></AddButton>
                 </AddToList>
                 <TaskContainer>
-                    {taskArray.length > 0 ?
+                {todos?.length > 0 ?
                     (<TaskWrap>
-                        {taskArray.map((task,index) => (
+                        {todos.map((todo,index) => (
                         <Tasks key = {index}>
-                            <TaskName>{task}</TaskName>
-                            <DeleteIcon onClick = {() => {handleDelete(index)}}><AiFillDelete/></DeleteIcon>
+                            <TaskName>{todo}</TaskName>
+                            <DeleteIcon onClick = {() => {handleDeleteTodo(todo)}}><AiFillDelete/></DeleteIcon>
                         </Tasks>
                         ))}
                     </TaskWrap>) :
